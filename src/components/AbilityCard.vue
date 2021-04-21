@@ -10,11 +10,13 @@
 
     <table class="table card-content is-fullwidth">
       <tr>
+        <th>ジョブ</th>
         <th>レベル</th>
         <th>コスト</th>
         <th>効果</th>
       </tr>
       <tr>
+        <td>{{ item.jobName }}</td>
         <td>{{ item.level }}</td>
         <td>{{ item.cost }}</td>
         <td>{{ item.effect }}</td>

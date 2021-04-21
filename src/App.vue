@@ -21,7 +21,7 @@
       />
       <ability-card
         :item="item"
-        v-if="hasProperty(item, ['level', 'name', 'cost', 'effect'])"
+        v-if="hasProperty(item, ['level', 'name', 'cost', 'effect', 'jobName'])"
         :key="item.name"
       />
       <shield-card
@@ -107,7 +107,9 @@ export default {
           )
         ),
         database.jobList.flatMap((job) =>
-          job.abilityList.filter((ability) => ability.cost.includes("Cost"))
+          job.abilityList
+            .filter((ability) => ability.cost.includes("Cost"))
+            .map((ability) => Object.assign({ jobName: job.name }, ability))
         ),
         database.shieldList,
         database.weaponList,
