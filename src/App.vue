@@ -1,7 +1,7 @@
 <template>
-  <div id="app" style="padding-top: 70px">
+  <div id="app" style="padding-top: 118px">
     <div
-      class="field"
+      class="field has-background-white"
       style="position: fixed; top: 0; z-index: 1; width: 100vw"
     >
       <div class="control">
@@ -11,6 +11,36 @@
           v-model="seatchText"
           placeholder="検索ワード"
         />
+      </div>
+      <div class="control">
+        <label class="checkbox">
+          <input type="checkbox" v-model="filterType.identify" />
+          ジョブ特性
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" v-model="filterType.ability" />
+          サブアビリティ
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" v-model="filterType.head" />
+          頭装備
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" v-model="filterType.body" />
+          体装備
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" v-model="filterType.shield" />
+          盾
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" v-model="filterType.weapon" />
+          武器
+        </label>
+        <label class="checkbox">
+          <input type="checkbox" v-model="filterType.accessory" />
+          アクセサリー
+        </label>
       </div>
     </div>
     <template v-for="item in filterData" :item="item">
@@ -100,6 +130,15 @@ export default {
   data() {
     return {
       seatchText: "",
+      filterType: {
+        identify: true,
+        ability: true,
+        shield: true,
+        weapon: true,
+        head: true,
+        body: true,
+        accessory: true,
+      },
       data: [].concat(
         database.jobList.flatMap((job) =>
           job.identityList.map((identify) =>
@@ -129,21 +168,84 @@ export default {
   },
   computed: {
     filterData() {
-      return this.data.filter((item) => {
-        if (item.text) {
-          return item.text.includes(this.seatchText);
-        }
+      return this.data
+        .filter((item) => {
+          if (item.text) {
+            return item.text.includes(this.seatchText);
+          }
 
-        if (item.effect) {
-          return item.effect.includes(this.seatchText);
-        }
+          if (item.effect) {
+            return item.effect.includes(this.seatchText);
+          }
 
-        if (item.specialEffects) {
-          return item.specialEffects.includes(this.seatchText);
-        }
+          if (item.specialEffects) {
+            return item.specialEffects.includes(this.seatchText);
+          }
 
-        return false;
-      });
+          return false;
+        })
+        .filter((item) => {
+          if (this.filterType.identify) {
+            return this.hasProperty(item, ["name", "text", "jobName"]);
+          } else if (this.filterType.ability) {
+            return this.hasProperty(item, [
+              "level",
+              "name",
+              "cost",
+              "effect",
+              "jobName",
+            ]);
+          } else if (this.filterType.shield) {
+            return this.hasProperty(item, [
+              "name",
+              "defence",
+              "magician",
+              "specialEffects",
+              "position",
+              "url",
+            ]);
+          }
+          if (this.filterType.weapon) {
+            return this.hasProperty(item, [
+              "name",
+              "defence",
+              "magician",
+              "specialEffects",
+              "position",
+              "bothHands",
+              "type",
+              "url",
+            ]);
+          } else if (this.filterType.head) {
+            return (
+              this.hasProperty(item, [
+                "name",
+                "defence",
+                "magician",
+                "specialEffects",
+                "position",
+                "type",
+                "url",
+              ]) && item.position === "頭"
+            );
+          } else if (this.filterType.body) {
+            return (
+              this.hasProperty(item, [
+                "name",
+                "defence",
+                "magician",
+                "specialEffects",
+                "position",
+                "type",
+                "url",
+              ]) && item.position === "体"
+            );
+          } else if (this.filterType.accessory) {
+            return this.hasProperty(item, ["name", "effect", "positon", "url"]);
+          } else {
+            return true;
+          }
+        });
     },
   },
 };
@@ -154,5 +256,8 @@ export default {
   margin-bottom: 16px;
   width: 1000px;
   border: solid 2px;
+}
+.checkbox {
+  margin-right: 8px;
 }
 </style>
